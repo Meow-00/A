@@ -1,0 +1,235 @@
+                                                                        res/drawable
+                                                                         bulb_on.png
+                                                                         bulb_off.png
+
+                                                                      
+                                                            activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/bulbImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/bulb_off"
+        android:contentDescription="Bulb Image"/>
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOn="Turn OFF"
+        android:textOff="Turn ON"
+        android:layout_marginTop="30dp" />
+</LinearLayout>
+
+                                                              MainActivity.java
+
+package com.example.bulbtoggler;
+
+import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.ToggleButton;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    ImageView bulbImage;
+    ToggleButton toggleButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bulbImage = findViewById(R.id.bulbImage);
+        toggleButton = findViewById(R.id.toggleButton);
+
+        toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                bulbImage.setImageResource(R.drawable.bulb_on);
+            } else {
+                bulbImage.setImageResource(R.drawable.bulb_off);
+            }
+        });
+    }
+}
+
+
+
+
+
+
+
+                                                               activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name" />
+
+        <TextView
+            android:text="Choose Text Color:"
+            android:paddingTop="10dp" />
+
+        <RadioGroup
+            android:id="@+id/colorGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton android:id="@+id/rbRed" android:text="Red" />
+            <RadioButton android:id="@+id/rbBlue" android:text="Blue" />
+            <RadioButton android:id="@+id/rbGreen" android:text="Green" />
+        </RadioGroup>
+
+        <TextView
+            android:text="Style:"
+            android:paddingTop="10dp" />
+
+        <CheckBox android:id="@+id/chkBold" android:text="Bold"/>
+        <CheckBox android:id="@+id/chkItalic" android:text="Italic"/>
+        <CheckBox android:id="@+id/chkUnderline" android:text="Underline"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/btnDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Display" />
+
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear"
+                android:layout_marginStart="10dp"/>
+
+            <Button
+                android:id="@+id/btnExit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exit"
+                android:layout_marginStart="10dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/outputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Output will appear here"
+            android:textSize="20sp"
+            android:paddingTop="20dp"/>
+    </LinearLayout>
+</ScrollView>
+
+                                                        MainActivity.java
+
+package com.example.userformat;
+
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText nameInput;
+    RadioGroup colorGroup;
+    CheckBox chkBold, chkItalic, chkUnderline;
+    Button btnDisplay, btnClear, btnExit;
+    TextView outputText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        nameInput = findViewById(R.id.nameInput);
+        colorGroup = findViewById(R.id.colorGroup);
+        chkBold = findViewById(R.id.chkBold);
+        chkItalic = findViewById(R.id.chkItalic);
+        chkUnderline = findViewById(R.id.chkUnderline);
+        btnDisplay = findViewById(R.id.btnDisplay);
+        btnClear = findViewById(R.id.btnClear);
+        btnExit = findViewById(R.id.btnExit);
+        outputText = findViewById(R.id.outputText);
+
+        btnDisplay.setOnClickListener(v -> {
+            String name = nameInput.getText().toString().trim();
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String message = "Hello " + name;
+            outputText.setText(message);
+
+            int style = Typeface.NORMAL;
+            if (chkBold.isChecked() && chkItalic.isChecked()) {
+                style = Typeface.BOLD_ITALIC;
+            } else if (chkBold.isChecked()) {
+                style = Typeface.BOLD;
+            } else if (chkItalic.isChecked()) {
+                style = Typeface.ITALIC;
+            }
+
+            outputText.setTypeface(null, style);
+
+            if (chkUnderline.isChecked()) {
+                outputText.setPaintFlags(outputText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            } else {
+                outputText.setPaintFlags(outputText.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
+            }
+
+            int selectedColorId = colorGroup.getCheckedRadioButtonId();
+            if (selectedColorId == R.id.rbRed) {
+                outputText.setTextColor(Color.RED);
+            } else if (selectedColorId == R.id.rbBlue) {
+                outputText.setTextColor(Color.BLUE);
+            } else if (selectedColorId == R.id.rbGreen) {
+                outputText.setTextColor(Color.GREEN);
+            } else {
+                outputText.setTextColor(Color.BLACK);
+            }
+        });
+
+        btnClear.setOnClickListener(v -> {
+            nameInput.setText("");
+            colorGroup.clearCheck();
+            chkBold.setChecked(false);
+            chkItalic.setChecked(false);
+            chkUnderline.setChecked(false);
+            outputText.setText("Output will appear here");
+            outputText.setTextColor(Color.BLACK);
+            outputText.setTypeface(null, Typeface.NORMAL);
+            outputText.setPaintFlags(outputText.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
+        });
+
+        btnExit.setOnClickListener(v -> finish());
+    }
+}
