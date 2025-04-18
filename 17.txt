@@ -1,0 +1,257 @@
+                                                  MainActivity.java
+
+package com.example.activitylifecycledemo;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "ActivityLifeCycle";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        showToast("onCreate");
+        Log.d(TAG, "onCreate called");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showToast("onStart");
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showToast("onResume");
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        showToast("onPause");
+        Log.d(TAG, "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        showToast("onStop");
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        showToast("onRestart");
+        Log.d(TAG, "onRestart called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        showToast("onDestroy");
+        Log.d(TAG, "onDestroy called");
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+}
+
+                                                                           activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textViewLifeCycle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Logcat or Toasts for Activity Lifecycle"
+        android:textSize="18sp"
+        android:textColor="#000000"/>
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+                                                               cordova create contactApp com.example.contactApp ContactApp
+                                                               cd contactApp
+                                                               cordova platform add android
+                                                               cordova plugin add cordova-plugin-contacts
+
+
+
+                                                                index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PhoneGap Contact App</title>
+  <script src="cordova.js"></script>
+  <script src="js/index.js"></script>
+</head>
+<body>
+  <h2>PhoneGap Contact App</h2>
+
+  <button onclick="createContact()">Create Contact</button><br><br>
+  <button onclick="searchContact()">Search Contact</button><br><br>
+  <button onclick="cloneContact()">Clone Contact</button><br><br>
+  <button onclick="removeContact()">Remove Contact</button>
+
+  <div id="output" style="margin-top: 20px; color: green;"></div>
+</body>
+</html>
+
+                                                                   index.js
+
+document.addEventListener("deviceready", onDeviceReady, false);
+
+let foundContact = null;
+
+function onDeviceReady() {
+    console.log("PhoneGap is ready!");
+}
+
+function createContact() {
+    const myContact = navigator.contacts.create({
+        displayName: "John Doe",
+        name: {
+            givenName: "John",
+            familyName: "Doe"
+        },
+        phoneNumbers: [{
+            type: "mobile",
+            value: "1234567890",
+            pref: true
+        }],
+        emails: [{
+            type: "home",
+            value: "john@example.com"
+        }]
+    });
+
+    myContact.save(function () {
+        document.getElementById("output").innerText = "Contact Created: John Doe";
+    }, function (err) {
+        document.getElementById("output").innerText = "Error saving contact: " + err;
+    });
+}
+
+function searchContact() {
+    let options = new ContactFindOptions();
+    options.filter = "John";
+    options.multiple = false;
+    options.desiredFields = [navigator.contacts.fieldType.displayName];
+
+    navigator.contacts.find(
+        [navigator.contacts.fieldType.displayName],
+        function (contacts) {
+            if (contacts.length > 0) {
+                foundContact = contacts[0];
+                document.getElementById("output").innerText = "Contact Found: " + foundContact.displayName;
+            } else {
+                document.getElementById("output").innerText = "Contact Not Found";
+            }
+        },
+        function (err) {
+            document.getElementById("output").innerText = "Error searching contact: " + err;
+        },
+        options
+    );
+}
+
+function cloneContact() {
+    if (!foundContact) {
+        document.getElementById("output").innerText = "Please search for a contact first.";
+        return;
+    }
+
+    const cloned = foundContact.clone();
+    cloned.displayName += " (Clone)";
+
+    cloned.save(function () {
+        document.getElementById("output").innerText = "Contact Cloned: " + cloned.displayName;
+    }, function (err) {
+        document.getElementById("output").innerText = "Error cloning contact: " + err;
+    });
+}
+
+function removeContact() {
+    if (!foundContact) {
+        document.getElementById("output").innerText = "Please search for a contact first.";
+        return;
+    }
+
+    foundContact.remove(function () {
+        document.getElementById("output").innerText = "Contact Removed: " + foundContact.displayName;
+        foundContact = null;
+    }, function (err) {
+        document.getElementById("output").innerText = "Error removing contact: " + err;
+    });
+}
+
+
+
+                                                                AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.contacts"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+   
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    
+    
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    
+    <application android:icon="@drawable/icon" android:label="ContactsApp">
+        <activity android:name="org.apache.cordova.CordovaActivity"
+                  android:label="Contacts App"
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:launchMode="singleTask"
+                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+                  android:hardwareAccelerated="true"
+                  android:windowSoftInputMode="adjustResize">
+           
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data android:name="com.google.android.gms.version"
+                   android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>
+
+
+                                                                          cordova build android
+                                                                          cordova run android
+
+
+                 

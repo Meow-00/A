@@ -1,0 +1,264 @@
+                                                              activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:gravity="center">
+
+    <TextView
+        android:text="Registration Form"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp" />
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name" />
+
+    <EditText
+        android:id="@+id/etAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Address"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:id="@+id/etMobile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mobile No."
+        android:inputType="phone"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:id="@+id/etAge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Age"
+        android:inputType="number"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center" />
+</LinearLayout>
+                                                       
+                                                                  MainActivity.java
+
+package com.example.registrationform;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etName, etAddress, etMobile, etAge;
+    Button btnRegister;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etName = findViewById(R.id.etName);
+        etAddress = findViewById(R.id.etAddress);
+        etMobile = findViewById(R.id.etMobile);
+        etAge = findViewById(R.id.etAge);
+        btnRegister = findViewById(R.id.btnRegister);
+
+        btnRegister.setOnClickListener(v -> {
+            String name = etName.getText().toString().trim();
+            String address = etAddress.getText().toString().trim();
+            String mobile = etMobile.getText().toString().trim();
+            String ageStr = etAge.getText().toString().trim();
+
+            if (TextUtils.isEmpty(name)) {
+                etName.setError("Name is required");
+                return;
+            }
+
+            if (TextUtils.isEmpty(address)) {
+                etAddress.setError("Address is required");
+                return;
+            }
+
+            if (TextUtils.isEmpty(mobile) || mobile.length() != 10) {
+                etMobile.setError("Enter valid 10-digit mobile number");
+                return;
+            }
+
+            if (TextUtils.isEmpty(ageStr)) {
+                etAge.setError("Age is required");
+                return;
+            }
+
+            int age = Integer.parseInt(ageStr);
+            if (age <= 0) {
+                etAge.setError("Age must be positive");
+                return;
+            }
+
+            Toast.makeText(this, "Registration Successful!", Toast.LENGTH_LONG).show();
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+                                                                         activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Item" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Insert" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Delete" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Search" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp" />
+</LinearLayout>
+
+
+                                                                          MainActivity.java
+
+package com.example.listviewoperations;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etInput;
+    Button btnAdd, btnDelete, btnSearch;
+    ListView listView;
+    ArrayList<String> itemList;
+    ArrayAdapter<String> adapter;
+    String selectedItem = "";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etInput = findViewById(R.id.etInput);
+        btnAdd = findViewById(R.id.btnAdd);
+        btnDelete = findViewById(R.id.btnDelete);
+        btnSearch = findViewById(R.id.btnSearch);
+        listView = findViewById(R.id.listView);
+
+        itemList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemList);
+        listView.setAdapter(adapter);
+
+        // Select an item
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            selectedItem = adapter.getItem(i);
+            etInput.setText(selectedItem);
+        });
+
+        btnAdd.setOnClickListener(view -> {
+            String item = etInput.getText().toString().trim();
+            if (!item.isEmpty()) {
+                itemList.add(item);
+                adapter.notifyDataSetChanged();
+                etInput.setText("");
+            } else {
+                Toast.makeText(this, "Please enter item", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnDelete.setOnClickListener(view -> {
+            if (!selectedItem.isEmpty() && itemList.contains(selectedItem)) {
+                itemList.remove(selectedItem);
+                adapter.notifyDataSetChanged();
+                etInput.setText("");
+                selectedItem = "";
+            } else {
+                Toast.makeText(this, "Select item to delete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnSearch.setOnClickListener(view -> {
+            String query = etInput.getText().toString().trim();
+            if (!query.isEmpty()) {
+                ArrayList<String> filtered = new ArrayList<>();
+                for (String item : itemList) {
+                    if (item.toLowerCase().contains(query.toLowerCase())) {
+                        filtered.add(item);
+                    }
+                }
+                adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, filtered);
+                listView.setAdapter(adapter);
+            } else {
+                adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemList);
+                listView.setAdapter(adapter);
+            }
+        });
+    }
+}
+
+
+                                                            

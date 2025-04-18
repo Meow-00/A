@@ -1,0 +1,184 @@
+                                                             activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter a number:"
+        android:textSize="18sp"
+        android:layout_marginBottom="10dp" />
+
+    <EditText
+        android:id="@+id/etNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. 5"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btnCalculate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calculate Factorial"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Factorial: "
+        android:textSize="20sp"
+        android:layout_marginTop="20dp" />
+</LinearLayout>
+
+                                                                              MainActivity.java
+
+package com.example.factorialapp;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etNumber;
+    Button btnCalculate;
+    TextView tvResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etNumber = findViewById(R.id.etNumber);
+        btnCalculate = findViewById(R.id.btnCalculate);
+        tvResult = findViewById(R.id.tvResult);
+
+        btnCalculate.setOnClickListener(view -> {
+            String numStr = etNumber.getText().toString().trim();
+
+            if (TextUtils.isEmpty(numStr)) {
+                etNumber.setError("Please enter a number");
+                return;
+            }
+
+            int number = Integer.parseInt(numStr);
+
+            if (number < 0) {
+                tvResult.setText("Factorial not defined for negative numbers.");
+                return;
+            }
+
+            long factorial = 1;
+            for (int i = 1; i <= number; i++) {
+                factorial *= i;
+            }
+
+            tvResult.setText("Factorial: " + factorial);
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+                                                                                 activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login Form"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#00FFFF"
+        android:layout_marginBottom="20dp" />
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="UserName"
+        android:textColorHint="#AAAAAA"
+        android:background="@android:drawable/edit_text" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textColorHint="#AAAAAA"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:background="#00FFFF" />
+</LinearLayout>
+
+                                                                               MainActivity.java
+
+package com.example.loginform;
+
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etUsername, etPassword;
+    Button btnLogin;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+
+        btnLogin.setOnClickListener(view -> {
+            String username = etUsername.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+
+            if (username.equals(password)) {
+                Toast.makeText(MainActivity.this, "Login Successful...", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Invalid Login", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
+

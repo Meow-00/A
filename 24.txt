@@ -1,0 +1,231 @@
+                                                                   MainActivity.java
+
+package com.example.stringcaseapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText inputText;
+    Button btnLower, btnUpper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        inputText = findViewById(R.id.inputText);
+        btnLower = findViewById(R.id.btnLower);
+        btnUpper = findViewById(R.id.btnUpper);
+
+        btnLower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String input = inputText.getText().toString();
+                Toast.makeText(MainActivity.this, input.toLowerCase(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnUpper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String input = inputText.getText().toString();
+                Toast.makeText(MainActivity.this, input.toUpperCase(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
+
+                                                                            activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/inputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a string"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/btnLower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LowerCase"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btnUpper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UpperCase"
+        android:layout_marginTop="20dp" />
+</LinearLayout>
+
+                                                                            AndroidManifest.xml
+<application
+    ...
+    android:theme="@style/Theme.AppCompat.Light">
+    <activity android:name=".MainActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+    </activity>
+</application>
+
+
+
+
+
+
+
+
+
+                                                                               DBHelper.java
+package com.example.cardatabase;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.*;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "CarDB.db";
+    private static final int DATABASE_VERSION = 1;
+
+    public DBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String createTable = "CREATE TABLE Car (" +
+                "id INTEGER PRIMARY KEY," +
+                "name TEXT," +
+                "type TEXT," +
+                "color TEXT)";
+        db.execSQL(createTable);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS Car");
+        onCreate(db);
+    }
+
+    public void insertCar(int id, String name, String type, String color) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id", id);
+        values.put("name", name);
+        values.put("type", type);
+        values.put("color", color);
+        db.insert("Car", null, values);
+        db.close();
+    }
+
+    public String getAllCars() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Car", null);
+        StringBuilder result = new StringBuilder();
+        while (cursor.moveToNext()) {
+            result.append("ID: ").append(cursor.getInt(0))
+                  .append(", Name: ").append(cursor.getString(1))
+                  .append(", Type: ").append(cursor.getString(2))
+                  .append(", Color: ").append(cursor.getString(3))
+                  .append("\n");
+        }
+        cursor.close();
+        return result.toString();
+    }
+}
+
+                                                                             MainActivity.java
+package com.example.cardatabase;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    DBHelper dbHelper;
+    Button btnInsert, btnShow;
+    TextView txtResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dbHelper = new DBHelper(this);
+
+        btnInsert = findViewById(R.id.btnInsert);
+        btnShow = findViewById(R.id.btnShow);
+        txtResult = findViewById(R.id.txtResult);
+
+        btnInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbHelper.insertCar(1, "Toyota", "SUV", "Black");
+                dbHelper.insertCar(2, "Honda", "Sedan", "White");
+                dbHelper.insertCar(3, "Ford", "Truck", "Red");
+                dbHelper.insertCar(4, "BMW", "Coupe", "Blue");
+                dbHelper.insertCar(5, "Tesla", "Electric", "Silver");
+                Toast.makeText(MainActivity.this, "Inserted 5 cars!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String cars = dbHelper.getAllCars();
+                txtResult.setText(cars);
+            }
+        });
+    }
+}
+
+                                                                             activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnInsert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert 5 Cars" />
+
+    <Button
+        android:id="@+id/btnShow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show All Cars"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/txtResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="#000"
+        android:textSize="16sp" />
+</LinearLayout>

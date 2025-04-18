@@ -1,0 +1,252 @@
+                                                                MainActivity.java
+
+package com.example.implicitintentapp;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button btnOpenWebsite;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnOpenWebsite = findViewById(R.id.btnOpenWebsite);
+
+        btnOpenWebsite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Define the URL
+                String url = "https://www.google.com";
+
+                // Create an implicit intent to open the URL
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+
+                // Start the activity
+                startActivity(intent);
+            }
+        });
+    }
+}
+                                                                      activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnOpenWebsite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open Google Website" />
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+                                                                       activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Input Field for Name -->
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name"
+        android:textSize="18sp"/>
+
+    <!-- Button to display the message -->
+    <Button
+        android:id="@+id/buttonDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Display Message"/>
+
+    <!-- Label to display the message -->
+    <TextView
+        android:id="@+id/textViewMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        android:paddingTop="16dp"
+        android:gravity="center"/>
+
+    <!-- Formatting Options (Checkboxes) -->
+    <CheckBox
+        android:id="@+id/checkBoxBold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bold" />
+    
+    <CheckBox
+        android:id="@+id/checkBoxItalic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Italic" />
+
+    <CheckBox
+        android:id="@+id/checkBoxUnderline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Underline" />
+
+    <!-- Color Options (Radio Buttons) -->
+    <RadioGroup
+        android:id="@+id/radioGroupColors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <RadioButton
+            android:id="@+id/radioRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Red" />
+
+        <RadioButton
+            android:id="@+id/radioGreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Green" />
+
+        <RadioButton
+            android:id="@+id/radioBlue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blue" />
+    </RadioGroup>
+
+    <!-- Button to clear all fields -->
+    <Button
+        android:id="@+id/buttonClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear" />
+
+    <!-- Button to exit the application -->
+    <Button
+        android:id="@+id/buttonExit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Exit" />
+
+</LinearLayout>
+                                                                  MainActivity.java
+
+package com.example.textformatterapp;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.text.style.StyleSpan;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextName;
+    private TextView textViewMessage;
+    private CheckBox checkBoxBold, checkBoxItalic, checkBoxUnderline;
+    private RadioGroup radioGroupColors;
+    private Button buttonDisplay, buttonClear, buttonExit;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+       
+        editTextName = findViewById(R.id.editTextName);
+        textViewMessage = findViewById(R.id.textViewMessage);
+        checkBoxBold = findViewById(R.id.checkBoxBold);
+        checkBoxItalic = findViewById(R.id.checkBoxItalic);
+        checkBoxUnderline = findViewById(R.id.checkBoxUnderline);
+        radioGroupColors = findViewById(R.id.radioGroupColors);
+        buttonDisplay = findViewById(R.id.buttonDisplay);
+        buttonClear = findViewById(R.id.buttonClear);
+        buttonExit = findViewById(R.id.buttonExit);
+
+        
+        buttonDisplay.setOnClickListener(v -> {
+            String name = editTextName.getText().toString().trim();
+            if (TextUtils.isEmpty(name)) {
+                Toast.makeText(MainActivity.this, "Please enter your name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String message = "Hello, " + name;
+            textViewMessage.setText(message);
+
+           
+            int textStyle = 0;
+            if (checkBoxBold.isChecked()) {
+                textStyle |= android.graphics.Typeface.BOLD;
+            }
+            if (checkBoxItalic.isChecked()) {
+                textStyle |= android.graphics.Typeface.ITALIC;
+            }
+            textViewMessage.setTypeface(null, textStyle);
+
+           
+            if (checkBoxUnderline.isChecked()) {
+                textViewMessage.setPaintFlags(textViewMessage.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+            } else {
+                textViewMessage.setPaintFlags(textViewMessage.getPaintFlags() & (~android.graphics.Paint.UNDERLINE_TEXT_FLAG));
+            }
+
+
+            int selectedColor = Color.BLACK;
+            int selectedId = radioGroupColors.getCheckedRadioButtonId();
+            if (selectedId == R.id.radioRed) {
+                selectedColor = Color.RED;
+            } else if (selectedId == R.id.radioGreen) {
+                selectedColor = Color.GREEN;
+            } else if (selectedId == R.id.radioBlue) {
+                selectedColor = Color.BLUE;
+            }
+            textViewMessage.setTextColor(selectedColor);
+        });
+
+        
+        buttonClear.setOnClickListener(v -> {
+            editTextName.setText("");
+            textViewMessage.setText("");
+            checkBoxBold.setChecked(false);
+            checkBoxItalic.setChecked(false);
+            checkBoxUnderline.setChecked(false);
+            radioGroupColors.clearCheck();
+        });
+
+        buttonExit.setOnClickListener(v -> finish());
+    }
+}

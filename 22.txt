@@ -1,0 +1,188 @@
+                                                            activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- ImageView to display the image -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/image1" />
+
+    <!-- Button to change the image -->
+    <Button
+        android:id="@+id/buttonChangeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Image"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>
+
+                                                          MainActivity.java
+
+package com.example.changeimageapp;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+    private Button buttonChangeImage;
+    private boolean isImage1 = true;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        
+        imageView = findViewById(R.id.imageView);
+        buttonChangeImage = findViewById(R.id.buttonChangeImage);
+
+      
+        buttonChangeImage.setOnClickListener(v -> {
+            if (isImage1) {
+                
+                imageView.setImageResource(R.drawable.image2);
+            } else {
+                
+                imageView.setImageResource(R.drawable.image1);
+            }
+
+
+            isImage1 = !isImage1;
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+                                                                           activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/editNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Number"
+        android:inputType="numberSigned"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioOddEven"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Odd or Even"/>
+
+        <RadioButton
+            android:id="@+id/radioPosNeg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Positive or Negative"/>
+
+        <RadioButton
+            android:id="@+id/radioSquare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Square"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click"/>
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ans: "
+        android:paddingTop="20dp"
+        android:textSize="18sp"/>
+</LinearLayout>
+
+                                                                          MainActivity.java
+
+package com.example.numericoperation;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editNumber;
+    RadioButton radioOddEven, radioPosNeg, radioSquare;
+    Button btnCheck;
+    TextView tvResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editNumber = findViewById(R.id.editNumber);
+        radioOddEven = findViewById(R.id.radioOddEven);
+        radioPosNeg = findViewById(R.id.radioPosNeg);
+        radioSquare = findViewById(R.id.radioSquare);
+        btnCheck = findViewById(R.id.btnCheck);
+        tvResult = findViewById(R.id.tvResult);
+
+        btnCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String input = editNumber.getText().toString().trim();
+                if (input.isEmpty()) {
+                    tvResult.setText("Ans: Please enter a number");
+                    return;
+                }
+
+                int number = Integer.parseInt(input);
+                String result = "";
+
+                if (radioOddEven.isChecked()) {
+                    result = (number % 2 == 0) ? "No is Even" : "No is Odd";
+                } else if (radioPosNeg.isChecked()) {
+                    if (number > 0) result = "No is Positive";
+                    else if (number < 0) result = "No is Negative";
+                    else result = "No is Zero";
+                } else if (radioSquare.isChecked()) {
+                    result = "Square of No is " + (number * number);
+                } else {
+                    result = "Please select an option";
+                }
+
+                tvResult.setText("Ans: " + result);
+            }
+        });
+    }
+}
+
