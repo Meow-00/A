@@ -1,0 +1,257 @@
+                                                              activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Progress"
+        android:layout_below="@id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+</RelativeLayout>
+
+                                                             
+
+                                                                   MainActivity.java
+
+package com.example.progressbardemo;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ProgressBar progressBar;
+    private Button startButton;
+    private int progressStatus = 0;
+    private Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        progressBar = findViewById(R.id.progressBar);
+        startButton = findViewById(R.id.startButton);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+                progressStatus = 0;
+                new Thread(new Runnable() {
+                    public void run() {
+                        while (progressStatus < 100) {
+                            progressStatus++;
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    progressBar.setProgress(progressStatus);
+                                }
+                            });
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
+            }
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+                                                           EmployeeDatabaseHelper.java
+
+package com.example.employeesqlite;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class EmployeeDatabaseHelper extends SQLiteOpenHelper {
+
+    public static final String DATABASE_NAME = "EmployeeDB";
+    public static final int DATABASE_VERSION = 1;
+
+    public static final String TABLE_NAME = "Employee";
+    public static final String COLUMN_E_ID = "E_id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_ADDRESS = "address";
+    public static final String COLUMN_PH_NO = "ph_no";
+
+    private static final String TABLE_CREATE =
+            "CREATE TABLE " + TABLE_NAME + " (" +
+                    COLUMN_E_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_NAME + " TEXT, " +
+                    COLUMN_ADDRESS + " TEXT, " +
+                    COLUMN_PH_NO + " TEXT);";
+
+    public EmployeeDatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(TABLE_CREATE);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+}
+
+                                                                      EmployeeDatabaseManager.java
+
+package com.example.employeesqlite;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+public class EmployeeDatabaseManager {
+
+    private EmployeeDatabaseHelper dbHelper;
+
+    public EmployeeDatabaseManager(Context context) {
+        dbHelper = new EmployeeDatabaseHelper(context);
+    }
+
+    public void insertEmployee(String name, String address, String phNo) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(EmployeeDatabaseHelper.COLUMN_NAME, name);
+        values.put(EmployeeDatabaseHelper.COLUMN_ADDRESS, address);
+        values.put(EmployeeDatabaseHelper.COLUMN_PH_NO, phNo);
+        db.insert(EmployeeDatabaseHelper.TABLE_NAME, null, values);
+        db.close();
+    }
+}
+
+                                                                    MainActivity.java
+
+package com.example.employeesqlite;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EmployeeDatabaseManager dbManager;
+    private ListView listView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dbManager = new EmployeeDatabaseManager(this);
+        listView = findViewById(R.id.listView);
+
+        dbManager.insertEmployee("John Doe", "123 Main St", "9876543210");
+        dbManager.insertEmployee("Jane Smith", "456 Oak Rd", "9876543211");
+        dbManager.insertEmployee("Michael Johnson", "789 Pine Ln", "9876543212");
+        dbManager.insertEmployee("Emily Davis", "101 Maple Dr", "9876543213");
+        dbManager.insertEmployee("James Brown", "202 Birch Blvd", "9876543214");
+
+        displayEmployeeDetails();
+    }
+
+    private void displayEmployeeDetails() {
+        SQLiteDatabase db = dbManager.getReadableDatabase();
+        Cursor cursor = db.query(EmployeeDatabaseHelper.TABLE_NAME, null, null, null, null, null, null);
+
+        String[] from = {EmployeeDatabaseHelper.COLUMN_E_ID, EmployeeDatabaseHelper.COLUMN_NAME, EmployeeDatabaseHelper.COLUMN_ADDRESS, EmployeeDatabaseHelper.COLUMN_PH_NO};
+        int[] to = {R.id.eid, R.id.name, R.id.address, R.id.ph_no};
+
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.employee_item, cursor, from, to, 0);
+        listView.setAdapter(adapter);
+    }
+}
+
+                                                                    activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>
+
+                                                                     employee_item.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/eid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Employee ID" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address" />
+
+    <TextView
+        android:id="@+id/ph_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone Number" />
+</LinearLayout>
+

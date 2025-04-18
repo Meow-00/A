@@ -1,0 +1,229 @@
+                                               activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/editNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Perfect Number" />
+
+</LinearLayout>
+
+
+                                                     MainActivity.java
+
+package com.example.perfectnumber;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editNumber;
+    Button btnCheck;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editNumber = findViewById(R.id.editNumber);
+        btnCheck = findViewById(R.id.btnCheck);
+
+        btnCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String numStr = editNumber.getText().toString();
+
+                if (numStr.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please enter a number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int number = Integer.parseInt(numStr);
+                if (isPerfectNumber(number)) {
+                    Toast.makeText(MainActivity.this, number + " is a Perfect Number", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, number + " is NOT a Perfect Number", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private boolean isPerfectNumber(int num) {
+        int sum = 0;
+        for (int i = 1; i <= num / 2; i++) {
+            if (num % i == 0) {
+                sum += i;
+            }
+        }
+        return sum == num;
+    }
+}
+
+
+
+
+
+
+
+
+                                                         activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/etInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="none"
+        android:hint="0"
+        android:textSize="24sp" />
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="5"
+        android:layout_marginTop="20dp">
+
+        <!-- Number and Operator Buttons -->
+        <Button android:text="1" android:id="@+id/btn1"/>
+        <Button android:text="2" android:id="@+id/btn2"/>
+        <Button android:text="3" android:id="@+id/btn3"/>
+        <Button android:text="+" android:id="@+id/btnAdd"/>
+
+        <Button android:text="4" android:id="@+id/btn4"/>
+        <Button android:text="5" android:id="@+id/btn5"/>
+        <Button android:text="6" android:id="@+id/btn6"/>
+        <Button android:text="-" android:id="@+id/btnSub"/>
+
+        <Button android:text="7" android:id="@+id/btn7"/>
+        <Button android:text="8" android:id="@+id/btn8"/>
+        <Button android:text="9" android:id="@+id/btn9"/>
+        <Button android:text="*" android:id="@+id/btnMul"/>
+
+        <Button android:text="." android:id="@+id/btnDot"/>
+        <Button android:text="0" android:id="@+id/btn0"/>
+        <Button android:text="C" android:id="@+id/btnClear"/>
+        <Button android:text="/" android:id="@+id/btnDiv"/>
+    </GridLayout>
+
+    <Button
+        android:id="@+id/btnEqual"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="="
+        android:layout_marginTop="16dp"
+        android:textSize="24sp" />
+</LinearLayout>
+
+
+                                                  
+                                                        MainActivity.java
+package com.example.calculator;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etInput;
+    String input = "", operator = "";
+    double num1 = 0, num2 = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        etInput = findViewById(R.id.etInput);
+
+        setButtonListeners();
+    }
+
+    private void setButtonListeners() {
+        int[] numberBtnIDs = {R.id.btn0, R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4,
+                              R.id.btn5, R.id.btn6, R.id.btn7, R.id.btn8, R.id.btn9, R.id.btnDot};
+        int[] operatorBtnIDs = {R.id.btnAdd, R.id.btnSub, R.id.btnMul, R.id.btnDiv};
+
+        View.OnClickListener numberListener = view -> {
+            Button btn = (Button) view;
+            input += btn.getText().toString();
+            etInput.setText(input);
+        };
+
+        for (int id : numberBtnIDs) {
+            findViewById(id).setOnClickListener(numberListener);
+        }
+
+        for (int id : operatorBtnIDs) {
+            findViewById(id).setOnClickListener(view -> {
+                Button btn = (Button) view;
+                if (!input.isEmpty()) {
+                    num1 = Double.parseDouble(input);
+                    operator = btn.getText().toString();
+                    input = "";
+                    etInput.setText("");
+                }
+            });
+        }
+
+        findViewById(R.id.btnEqual).setOnClickListener(view -> {
+            if (!input.isEmpty()) {
+                num2 = Double.parseDouble(input);
+                double result = calculate(num1, num2, operator);
+                etInput.setText(String.valueOf(result));
+                input = String.valueOf(result);
+            }
+        });
+
+        findViewById(R.id.btnClear).setOnClickListener(view -> {
+            input = "";
+            operator = "";
+            num1 = 0;
+            num2 = 0;
+            etInput.setText("");
+        });
+    }
+
+    private double calculate(double a, double b, String op) {
+        switch (op) {
+            case "+": return a + b;
+            case "-": return a - b;
+            case "*": return a * b;
+            case "/": return b != 0 ? a / b : 0;
+            default: return 0;
+        }
+    }
+}
+
+
+

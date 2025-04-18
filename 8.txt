@@ -1,0 +1,217 @@
+                                                  MainActivity.java
+
+package com.example.activitylifecycledemo;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "ActivityLifeCycle";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        showToast("onCreate");
+        Log.d(TAG, "onCreate called");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showToast("onStart");
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showToast("onResume");
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        showToast("onPause");
+        Log.d(TAG, "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        showToast("onStop");
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        showToast("onRestart");
+        Log.d(TAG, "onRestart called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        showToast("onDestroy");
+        Log.d(TAG, "onDestroy called");
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+}
+
+                                                                           activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textViewLifeCycle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Logcat or Toasts for Activity Lifecycle"
+        android:textSize="18sp"
+        android:textColor="#000000"/>
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+                                                                         activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Customer Records"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ListView
+        android:id="@+id/listViewCustomers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+
+                                                                        CustomerDBHelper.java
+
+package com.example.customerdbapp;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class CustomerDBHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "CustomerDB";
+    private static final int DATABASE_VERSION = 1;
+    private static final String TABLE_NAME = "Customer";
+
+    public CustomerDBHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String query = "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)";
+        db.execSQL(query);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVer, int newVer) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+
+    public void insertCustomer(int id, String name, String address, String phone) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("id", id);
+        cv.put("name", name);
+        cv.put("address", address);
+        cv.put("ph_no", phone);
+        db.insert(TABLE_NAME, null, cv);
+    }
+
+    public Cursor getAllCustomers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+}
+
+                                                                           MainActivity.java
+
+package com.example.customerdbapp;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    CustomerDBHelper dbHelper;
+    ListView listViewCustomers;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        dbHelper = new CustomerDBHelper(this);
+        listViewCustomers = findViewById(R.id.listViewCustomers);
+
+        
+        dbHelper.insertCustomer(1, "Shadow", "Pune", "1234567890");
+        dbHelper.insertCustomer(2, "Arya", "Mumbai", "9876543210");
+        dbHelper.insertCustomer(3, "Karan", "Delhi", "7777777777");
+        dbHelper.insertCustomer(4, "Meera", "Nashik", "9999999999");
+        dbHelper.insertCustomer(5, "Ravi", "Nagpur", "8888888888");
+
+        Cursor cursor = dbHelper.getAllCustomers();
+        ArrayList<String> customerList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String address = cursor.getString(2);
+            String phone = cursor.getString(3);
+
+            customerList.add(id + " | " + name + " | " + address + " | " + phone);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, customerList);
+        listViewCustomers.setAdapter(adapter);
+    }
+}

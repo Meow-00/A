@@ -1,0 +1,266 @@
+                                                            activity_main.xml
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etNum1"
+        android:hint="Enter first number"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/etNum2"
+        android:hint="Enter second number"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnPower"
+        android:text="Power"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnAverage"
+        android:text="Average"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+                 
+                                                        MainActivity.java 
+
+package com.example.poweraverage;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText etNum1, etNum2;
+    Button btnPower, btnAverage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        etNum1 = findViewById(R.id.etNum1);
+        etNum2 = findViewById(R.id.etNum2);
+        btnPower = findViewById(R.id.btnPower);
+        btnAverage = findViewById(R.id.btnAverage);
+
+        btnPower.setOnClickListener(view -> calculate("power"));
+        btnAverage.setOnClickListener(view -> calculate("average"));
+    }
+
+    void calculate(String operation) {
+        double num1 = Double.parseDouble(etNum1.getText().toString());
+        double num2 = Double.parseDouble(etNum2.getText().toString());
+        double result;
+
+        if (operation.equals("power")) {
+            result = Math.pow(num1, num2);
+        } else {
+            result = (num1 + num2) / 2;
+        }
+
+        Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+        intent.putExtra("result", result);
+        startActivity(intent);
+    }
+}
+
+                                                           activity_result.xml
+
+<!-- res/layout/activity_result.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:textSize="24sp"
+        android:text="Result will appear here"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+         
+                                                          ResultActivity.java
+
+package com.example.poweraverage;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ResultActivity extends AppCompatActivity {
+
+    TextView tvResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_result);
+
+        tvResult = findViewById(R.id.tvResult);
+        double result = getIntent().getDoubleExtra("result", 0.0);
+        tvResult.setText("Result: " + result);
+    }
+}
+
+
+                                                 AndroidManifest.xml
+<!-- AndroidManifest.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.poweraverage">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Power and Average Calculator"
+        android:theme="@style/Theme.AppCompat.Light">
+        
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ResultActivity" />
+
+    </application>
+
+</manifest>
+
+
+
+
+
+
+
+
+
+                                                                     activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/inputString"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter String" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton android:id="@+id/rbUppercase" android:text="Uppercase"/>
+        <RadioButton android:id="@+id/rbLowercase" android:text="Lowercase"/>
+        <RadioButton android:id="@+id/rbRight5" android:text="Right 5 Character"/>
+        <RadioButton android:id="@+id/rbLeft5" android:text="Left 5 Character"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click" />
+
+    <TextView
+        android:id="@+id/outputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Output :"
+        android:paddingTop="10dp" />
+
+</LinearLayout>
+
+                                                                       MainActivity.java
+
+package com.example.stringoperations;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText inputString;
+    RadioGroup radioGroup;
+    RadioButton rbUppercase, rbLowercase, rbRight5, rbLeft5;
+    Button btnClick;
+    TextView outputText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        inputString = findViewById(R.id.inputString);
+        radioGroup = findViewById(R.id.radioGroup);
+        rbUppercase = findViewById(R.id.rbUppercase);
+        rbLowercase = findViewById(R.id.rbLowercase);
+        rbRight5 = findViewById(R.id.rbRight5);
+        rbLeft5 = findViewById(R.id.rbLeft5);
+        btnClick = findViewById(R.id.btnClick);
+        outputText = findViewById(R.id.outputText);
+
+        btnClick.setOnClickListener(v -> {
+            String text = inputString.getText().toString();
+            String result = "";
+
+            if (rbUppercase.isChecked()) {
+                result = text.toUpperCase();
+            } else if (rbLowercase.isChecked()) {
+                result = text.toLowerCase();
+            } else if (rbRight5.isChecked()) {
+                result = text.length() > 5 ? text.substring(text.length() - 5) : text;
+            } else if (rbLeft5.isChecked()) {
+                result = text.length() > 5 ? text.substring(0, 5) : text;
+            }
+
+            outputText.setText("Output : " + result);
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                 
+                           
